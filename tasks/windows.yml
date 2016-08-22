@@ -1,0 +1,8 @@
+---
+# tasks file for packages
+- name: Install desired packages
+  action: "{{ item.win_pkg_mgr }}"
+  args:
+   name: "{{ item.name }}{{ item.version | default(omit) }}"
+   state: "{{ item.state }}"
+  with_items: "{{ win_pkg_list }}"

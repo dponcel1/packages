@@ -1,0 +1,4 @@
+---
+# tasks file for packages
+- name: Include OS specific tasks
+  include: "{{ ansible_os_family|lower }}.yml"

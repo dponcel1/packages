@@ -1,5 +1,117 @@
----
 - hosts: all
-  tasks:
+  remote_user: devops
+  become: yes
   roles:
-   - packages
+   - role: packages
+     tags: ['pkg_install']
+     pkg_list:
+      - name: htop
+        pkg_mgr: yum
+        version: 
+        state: latest
+
+      - name: ['httpd', 'mod_ssl']
+        pkg_mgr: yum
+        version:
+        state: present
+
+      - name: mc
+        pkg_mgr: yum
+        version: -4.8.7
+        state: present
+
+     win_pkg_list:
+      - name: notepadplusplus
+        win_pkg_mgr: win_chocolatey
+        version: -6.6
+        state: present
+
+   - role: filesystem
+     tags: ['mnt_volume']
+     vol_groups: true
+     log_vol: true
+     fs_creation: true
+     mount_vol: true
+     vol_group:
+      - vg_create: lvg
+        volgrp_name: volgrp02
+        phys_disk: /dev/sda
+        state: present
+        
+     lgcl_volume:
+      - lv_create: lvol
+        volgrp_name: volgrp02
+        lv_name: lv_BAML
+        phys_disk: /dev/sda
+        size: 7G
+        state: present
+
+     create_filesystem:
+      - fs_create: filesystem
+        fstype: xfs
+        dev: /dev/volgrp02/lv_BAML
+
+     mnt_volume:
+      - mnt_volume: mount
+        name: /data
+        state: mounted
+        src: /dev/volgrp02/lv_BAML
+        fstype: xfs
+        passno: no
+
+   - role: file
+     tags: ['template_files']
+     tmpl_put: true
+     dir_creation: true
+     copy_source: true
+     template_create:
+      - tmpl_create: template
+        src: motd.j2
+        dest: /etc/motd
+        owner: root
+        group: root
+        mode: "0644"
+        backup: yes
+
+     file_create:
+      - dir_create: file
+        state: directory
+        path: /tmp2/dir1
+        src: /tmp2/dir1
+        link_dest: /var/log/tmp2
+        link_state: link
+        owner: root
+        group: root
+        mode: "0775"
+
+     copy_file:
+      - copy_file: copy
+        src: foo.conf
+        dest: /etc/foo.conf
+        owner: root
+        group: root
+        mode: "0644"
+        backup: yes
+
+   - role: microservice
+     tags: ['microservice']
+     deployment_include: maven
+     appinit:
+      - deployment: deploy_helper
+        path: /hosting/apps
+        shared_path:
+        state: finalize
+
+### Version and BAML ID's can be substituted as necessary
+
+     maven_artifacts:
+      - maven_artifact: maven_artifact
+        maven_repository: http://repo1.maven.org/maven2
+#        maven_groupID: com.baml
+        maven_groupID: junit
+#        maven_artifactID: bamlstuff
+        maven_artifactID: junit
+#        maven_version: 1.0.0-SNAPSHOT
+        maven_state: present
+        maven_version: latest
+        maven_artifact_dest: /tmp2/maven/junit.jar

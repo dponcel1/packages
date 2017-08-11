@@ -7,7 +7,7 @@
      pkg_list:
       - name: htop
         pkg_mgr: yum
-        version: 
+        version:
         state: latest
 
       - name: ['httpd', 'mod_ssl']

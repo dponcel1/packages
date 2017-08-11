@@ -1,5 +1,10 @@
 ---
 # tasks file for packages
+- name: install something
+  yum:
+    name: nc
+    state: present
+
 - name: Install desired packages
   action: "{{ item.pkg_mgr }}"
   args:

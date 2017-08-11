@@ -5,9 +5,9 @@
     name: nc
     state: present
 
-- name: Install desired packages
-  action: "{{ item.pkg_mgr }}"
-  args:
-   name: "{{ item.name }}{{ item.version | default(omit) }}"
-   state: "{{ item.state }}"
-  with_items: "{{ pkg_list }}"
+#- name: Install desired packages
+#  action: "{{ item.pkg_mgr }}"
+#  args:
+#   name: "{{ item.name }}{{ item.version | default(omit) }}"
+#   state: "{{ item.state }}"
+#  with_items: "{{ pkg_list }}"
